@@ -1,33 +1,46 @@
 padding = 0;
 
 module rotating_case(diameter, thickness) {
-    case_wall = 2;
-    case_edge = 150;
-    left_edge = 60;
-    right_edge = 60;
-
-    edge_wall_thickness = thickness + (2 * case_wall);
-    edge_wall_diameter = (diameter + (case_wall* 2) + padding) / 2;
+    outside_shaft_size = (thickness + 6 * case_wall);
+    echo(str("outside_shaft_size = ", outside_shaft_size));
     
-    translate([0,(thickness + case_wall) / 2,0])
-    rotate([90,0,0]) {
-        // Edge walls
-        case_wall(case_edge, diameter, thickness, case_wall, padding);
+    difference() {
+        union() {
+            translate([0, (thickness + (2 * case_wall)) / 2, 0])
+            rotate([90,0,0]) {
+                // Edge walls
+                case_wall(case_edge, diameter, thickness, case_wall, padding);
 
-        // Walls fills
+                // Walls fills
+                case_wall_fill(left_edge, right_edge, case_edge, edge_wall_thickness, edge_wall_diameter, case_wall);    
+            }
 
-        case_wall_fill(left_edge, right_edge, case_edge, edge_wall_thickness, edge_wall_diameter, case_wall);    
+            translate([0,0, (diameter / 2) - 10])
+            square_adapter(
+                15,
+                third_side(edge_wall_diameter, 180 - (left_edge + right_edge)), 
+                thickness,
+                case_wall * 2
+            );
+
+            // outside shaft
+            translate([0, outside_shaft_size / 2, 0])
+            rotate([90,0,0])
+            linear_extrude(outside_shaft_size) {
+                circle(d = 12, $fn = 100);
+        }
+        }
+        // diff parts
+        diff_module(diameter, padding, thickness, edge_wall_diameter, left_edge, right_edge, case_wall);
     }
 
-    square_adapter(2, third_side(diameter / 2, left_edge + right_edge), thickness, case_wall);
-
-/*
+    /*
+    translate([0, thickness /2, 0])
     color([0.1, 0.1, 0.1])
-    translate([0, 0, case_wall])
-    rotating_mechanism(diameter, thickness);
-*/   
+    rotate([90,0,0])
+    rotating_mechanism(diameter, thickness, 8, 12);
+    */
 }
-
 
 module case_wall(edge, diameter, thickness, wall, padding) {
     mirror([1, 0, 0])
@@ -69,3 +82,24 @@ module square_adapter(thickness, x, y, wall) {
     }
 }
 
+module diff_module(diameter, padding, thickness, edge_wall_diameter, left_edge, right_edge, wall) {
+    outside_shaft_size = (thickness + 6 * case_wall);
+    
+    rotate([90,0,0])
+    pieSlice(180, (diameter + padding) / 2, thickness);
+    cube(
+        size=[
+            third_side(edge_wall_diameter, 180 - (left_edge + right_edge)), 
+            thickness,
+            100
+        ], 
+        center=true
+    );
+
+
+    translate([0, outside_shaft_size / 2, 0])
+    rotate([90,0,0])
+    linear_extrude(outside_shaft_size) {
+        circle(d = 8, $fn = 100);
+    }
+}
