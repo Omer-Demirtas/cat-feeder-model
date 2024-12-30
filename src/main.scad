@@ -24,10 +24,8 @@ outside_shaft_size = (rotating_mechanism_thickness + 4 * case_wall);
 
 /* SLIDER */
 slider_wall_thickness = 10;
-slider_length = diameter / 2;
-
-echo(str("diameter", diameter));
-
+slider_length = 30;
+ 
 module main() {
     adapter_height = 7;
     adapter_translate = (diameter / 2) - 10 + 15;
