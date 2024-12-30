@@ -120,3 +120,26 @@ module vida_disli_kapak() {
         vida_disleri(true);
     }
 }
+
+module cone_lid(x, y, wall) {
+    square_gaps(x + wall, y + wall, 16, wall);
+    square_gaps(x, y, 11, wall);
+
+    linear_extrude(height = wall) {
+        difference() {
+            square(size = [x,y], center = true);
+            circle(d = x - wall, $fn = 100);
+        } 
+    }
+}
+
+
+module square_gaps(x, y, thickness, wall) {
+    linear_extrude(thickness) {
+        difference() {
+            square([x + wall, y + wall], center = true);
+
+            square([x, y], center = true);
+        }
+    }
+}
