@@ -47,3 +47,16 @@ module angle_part_of_circle(diameter = 50, left_angle = 60, right_angle = 60) {
 }
 
 function third_side(a, theta) = sqrt(2 * a^2 - 2 * a^2 * cos(theta));
+
+inner_diameter_608ZZ = 8;
+outer_diameter_608ZZ = 22; 
+width_608ZZ = 7;
+
+module R_608ZZ() {
+    linear_extrude(height=width_608ZZ, center=true) {
+        difference() {
+            circle(d=outer_diameter_608ZZ, $fn = 100);
+            circle(d=inner_diameter_608ZZ, $fn = 100);
+        }
+    }
+}
