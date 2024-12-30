@@ -1,9 +1,16 @@
-padding = 0;
-
 module rotating_case(diameter, thickness) {
-    outside_shaft_size = (thickness + 6 * case_wall);
     echo(str("outside_shaft_size = ", outside_shaft_size));
     
+    animation_angle = $t * 360;
+
+    // -90 - 0
+    //rotating_angle = (animation_angle % 90);
+    /*
+        90 derecelik açı yapması yeterli
+        takılma durumunda 90 derecelik açıyı tamamlayamayacak bu durumda 70 derecelik bir açıda tıkabilir
+    */
+    rotating_angle = 70;
+
     difference() {
         union() {
             translate([0, (thickness + (2 * case_wall)) / 2, 0])
@@ -26,20 +33,18 @@ module rotating_case(diameter, thickness) {
             // outside shaft
             translate([0, outside_shaft_size / 2, 0])
             rotate([90,0,0])
-            linear_extrude(outside_shaft_size) {
-                circle(d = 12, $fn = 100);
-        }
+            shaft_cover();
         }
         // diff parts
         diff_module(diameter, padding, thickness, edge_wall_diameter, left_edge, right_edge, case_wall);
     }
 
-    /*
+    rotate([0,rotating_angle,0])
+    rotate([0,-90,0])
     translate([0, thickness /2, 0])
-    color([0.1, 0.1, 0.1])
+    color("#F2E751")
     rotate([90,0,0])
     rotating_mechanism(diameter, thickness, 8, 12);
-    */
 }
 
 module case_wall(edge, diameter, thickness, wall, padding) {
@@ -83,8 +88,6 @@ module square_adapter(thickness, x, y, wall) {
 }
 
 module diff_module(diameter, padding, thickness, edge_wall_diameter, left_edge, right_edge, wall) {
-    outside_shaft_size = (thickness + 6 * case_wall);
-    
     rotate([90,0,0])
     pieSlice(180, (diameter + padding) / 2, thickness);
     cube(
@@ -99,7 +102,5 @@ module diff_module(diameter, padding, thickness, edge_wall_diameter, left_edge, 
 
     translate([0, outside_shaft_size / 2, 0])
     rotate([90,0,0])
-    linear_extrude(outside_shaft_size) {
-        circle(d = 8, $fn = 100);
-    }
+    shaft();
 }
